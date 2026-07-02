@@ -32,7 +32,7 @@ public class ChunkKeyClient implements ClientModInitializer {
                         // Thay đổi giá trị trong Game Options
                         client.options.getViewDistance().setValue(newDistance);
                         // Lưu lại cấu hình vào file options.txt
-                        client.options.save();
+                       client.options.write();
                         
                         context.getSource().sendFeedback(Text.literal("Đã đặt Render Distance thành: ")
                             .append(Text.literal(String.valueOf(newDistance)).formatted(Formatting.GREEN))
