@@ -1,0 +1,25 @@
+{
+  "schemaVersion": 1,
+  "id": "chunkkey",
+  "version": "${version}",
+  "name": "ChunkKey",
+  "description": "Nhanh chóng xem và thay đổi Render Distance qua lệnh /ck.",
+  "authors": [
+    "YourName"
+  ],
+  "contact": {
+    "homepage": ""
+  },
+  "license": "MIT",
+  "environment": "client",
+  "entrypoints": {
+    "client": [
+      "com.example.chunkkey.client.ChunkKeyClient"
+    ]
+  },
+  "depends": {
+    "fabricloader": ">=0.16.0",
+    "minecraft": "~1.21.4",
+    "fabric-api": "*"
+  }
+}
