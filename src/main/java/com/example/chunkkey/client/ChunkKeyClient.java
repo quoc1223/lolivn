@@ -15,43 +15,43 @@ public class ChunkKeyClient implements ClientModInitializer {
 
     @Override
     public void onInitializeClient() {
-        // 1. Tạo và đăng ký phím mũi tên LÊN để tăng render distance
+        // Đăng ký phím tắt theo chuẩn Fabric API mới
         keyIncrease = KeyBindingHelper.registerKeyBinding(new KeyBinding(
-            "Tăng Render Distance", 
+            "key.chunkkey.increase", 
             InputUtil.Type.KEYSYM, 
-            GLFW.GLFW_KEY_UP, // Mặc định là nút mũi tên LÊN (UP ARROW)
-            "ChunkKey"
+            GLFW.GLFW_KEY_UP, 
+            "category.chunkkey"
         ));
 
-        // 2. Tạo và đăng ký phím mũi tên XUỐNG để giảm render distance
         keyDecrease = KeyBindingHelper.registerKeyBinding(new KeyBinding(
-            "Giảm Render Distance", 
+            "key.chunkkey.decrease", 
             InputUtil.Type.KEYSYM, 
-            GLFW.GLFW_KEY_DOWN, // Mặc định là nút mũi tên XUỐNG (DOWN ARROW)
-            "ChunkKey"
+            GLFW.GLFW_KEY_DOWN, 
+            "category.chunkkey"
         ));
 
-        // 3. Lắng nghe sự kiện bấm nút trong game
+        // Lắng nghe sự kiện click từ máy (Client)
         ClientTickEvents.END_CLIENT_TICK.register(client -> {
-            if (client.player == null) return;
+            if (client.player == null || client.options == null) return;
 
-            // Xử lý khi bấm nút Tăng
             while (keyIncrease.wasPressed()) {
                 int current = client.options.getViewDistance().getValue();
                 if (current < 32) {
                     client.options.getViewDistance().setValue(current + 1);
                     client.options.write();
+                    
+                    // Gửi tin nhắn dạng Overlay (hiện ngay trên thanh máu) để không làm rác khung chat
                     client.player.sendMessage(Text.literal("Render Distance: ")
                         .append(Text.literal(String.valueOf(current + 1)).formatted(Formatting.GREEN)), true);
                 }
             }
 
-            // Xử lý khi bấm nút Giảm
             while (keyDecrease.wasPressed()) {
                 int current = client.options.getViewDistance().getValue();
                 if (current > 2) {
                     client.options.getViewDistance().setValue(current - 1);
                     client.options.write();
+                    
                     client.player.sendMessage(Text.literal("Render Distance: ")
                         .append(Text.literal(String.valueOf(current - 1)).formatted(Formatting.RED)), true);
                 }
