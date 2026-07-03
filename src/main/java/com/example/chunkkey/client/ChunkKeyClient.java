@@ -1,56 +1,35 @@
 package com.example.chunkkey.client;
 
 import net.fabricmc.api.ClientModInitializer;
-import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
+import net.fabricmc.fabric.api.client.command.v2.ClientCommandManager;
+import net.fabricmc.fabric.api.client.command.v2.ClientCommandRegistrationCallback;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
-import org.lwjgl.glfw.GLFW;
 
 public class ChunkKeyClient implements ClientModInitializer {
-    // Chống giữ nút bị nhảy số quá nhanh
-    private boolean isUpPressed = false;
-    private boolean isDownPressed = false;
-
     @Override
     public void onInitializeClient() {
-        // Lắng nghe sự kiện tick của game (chạy liên tục 20 lần/giây)
-        ClientTickEvents.END_CLIENT_TICK.register(client -> {
-            if (client.player == null || client.options == null) return;
-
-            long window = MinecraftClient.getInstance().getWindow().getHandle();
-
-            // 1. Kiểm tra trực tiếp phím MŨI TÊN LÊN (GLFW_KEY_UP)
-            if (GLFW.glfwGetKey(window, GLFW.GLFW_KEY_UP) == GLFW.GLFW_PRESS) {
-                if (!isUpPressed) {
-                    isUpPressed = true;
+        // ĐĂNG KÝ DUY NHẤT LỆNH /ck KHÔNG KÈM THAM SỐ
+        ClientCommandRegistrationCallback.EVENT.register((dispatcher, registryAccess) -> {
+            dispatcher.register(ClientCommandManager.literal("ck").executes(context -> {
+                MinecraftClient client = MinecraftClient.getInstance();
+                if (client.player != null && client.options != null) {
                     int current = client.options.getViewDistance().getValue();
-                    if (current < 32) {
-                        client.options.getViewDistance().setValue(current + 1);
-                        client.options.write();
-                        client.player.sendMessage(Text.literal("Render Distance: ")
-                            .append(Text.literal(String.valueOf(current + 1)).formatted(Formatting.GREEN)), true);
-                    }
+                    
+                    // Nếu đang từ 18 chunk trở lên thì hạ xuống 2, ngược lại thì bật lên 32
+                    int target = (current >= 18) ? 2 : 32; 
+                    
+                    client.options.getViewDistance().setValue(target);
+                    client.options.write();
+                    
+                    // Đổi màu thông báo: 32 = Xanh lá, 2 = Đỏ
+                    Formatting color = (target == 32) ? Formatting.GREEN : Formatting.RED;
+                    context.getSource().sendFeedback(Text.literal("Render Distance: ")
+                        .append(Text.literal(String.valueOf(target)).formatted(color)));
                 }
-            } else {
-                isUpPressed = false;
-            }
-
-            // 2. Kiểm tra trực tiếp phím MŨI TÊN XUỐNG (GLFW_KEY_DOWN)
-            if (GLFW.glfwGetKey(window, GLFW.GLFW_KEY_DOWN) == GLFW.GLFW_PRESS) {
-                if (!isDownPressed) {
-                    isDownPressed = true;
-                    int current = client.options.getViewDistance().getValue();
-                    if (current > 2) {
-                        client.options.getViewDistance().setValue(current - 1);
-                        client.options.write();
-                        client.player.sendMessage(Text.literal("Render Distance: ")
-                            .append(Text.literal(String.valueOf(current - 1)).formatted(Formatting.RED)), true);
-                    }
-                }
-            } else {
-                isDownPressed = false;
-            }
+                return 1;
+            }));
         });
     }
 }
