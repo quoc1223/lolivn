@@ -8,7 +8,7 @@ import net.minecraft.util.Formatting;
 import org.lwjgl.glfw.GLFW;
 
 public class ChunkKeyClient implements ClientModInitializer {
-    // Biến dùng để chặn việc giữ nút bị nhảy số quá nhanh (chống spam nút)
+    // Chống giữ nút bị nhảy số quá nhanh
     private boolean isUpPressed = false;
     private boolean isDownPressed = false;
 
@@ -20,9 +20,9 @@ public class ChunkKeyClient implements ClientModInitializer {
 
             long window = MinecraftClient.getInstance().getWindow().getHandle();
 
-            // 1. Kiểm tra trực tiếp phím MŨI TÊN LÊN (GLFW_KEY_UP) từ bàn phím phần cứng
+            // 1. Kiểm tra trực tiếp phím MŨI TÊN LÊN (GLFW_KEY_UP)
             if (GLFW.glfwGetKey(window, GLFW.GLFW_KEY_UP) == GLFW.GLFW_PRESS) {
-                if (!isUpPressed) { // Chỉ xử lý 1 lần duy nhất khi vừa bấm xuống
+                if (!isUpPressed) {
                     isUpPressed = true;
                     int current = client.options.getViewDistance().getValue();
                     if (current < 32) {
@@ -33,12 +33,12 @@ public class ChunkKeyClient implements ClientModInitializer {
                     }
                 }
             } else {
-                isUpPressed = false; // Thả nút ra thì reset
+                isUpPressed = false;
             }
 
-            // 2. Kiểm tra trực tiếp phím MŨI TÊN XUỐNG (GLFW_KEY_DOWN) từ bàn phím phần cứng
+            // 2. Kiểm tra trực tiếp phím MŨI TÊN XUỐNG (GLFW_KEY_DOWN)
             if (GLFW.glfwGetKey(window, GLFW.GLFW_KEY_DOWN) == GLFW.GLFW_PRESS) {
-                if (!isDownPressed) { // Chỉ xử lý 1 lần duy nhất khi vừa bấm xuống
+                if (!isDownPressed) {
                     isDownPressed = true;
                     int current = client.options.getViewDistance().getValue();
                     if (current > 2) {
@@ -49,7 +49,7 @@ public class ChunkKeyClient implements ClientModInitializer {
                     }
                 }
             } else {
-                isDownPressed = false; // Thả nút ra thì reset
+                isDownPressed = false;
             }
         });
     }
